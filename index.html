@@ -1,0 +1,218 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>reveal.js</title>
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<section>
+					<h1>Functional Programming</h1>
+					<h3>Positive aspects and advantages</h3>
+				</section>
+				<section>
+					<h1>Advantages</h1>
+					<ul>
+						<li> clear code in deatils </li>
+						<li> easy to test </li>
+						<li> distributed/paraller systems </li>
+						<li> reusable code </li>
+					</ul>
+				</section>
+				<section>
+					<h1>Disadvantages</h1>
+					<ul>
+						<li> unreadable code entirety </li>
+						<li> different thinking </li>
+					</ul>
+				</section>
+				<section>
+					<h1>Currying</h1>
+					<pre><code class="hljs" data-trim contenteditable>
+var greet = function(greeting, name) {
+	console.log(greeting + ", " + name);
+};
+greet("Hello", "Heidi"); //"Hello, Heidi"
+
+var greetCurried = function(greeting) {
+	return function(name) {
+		console.log(greeting + ", " + name);
+	};
+};
+
+greet("Hello")("Heidi"); //"Hello, Heidi"
+var greetHello = greetCurried("Hello");
+greetHello("Heidi"); //"Hello, Heidi"
+greetHello("Eddie"); //"Hello, Eddie"
+					</code></pre>
+				</section>
+				<section>
+					<h1>Currying in real life</h1>
+					<pre><code class="hljs" data-trim contenteditable>
+var statuses = {
+	rejected: 'rejected_api',
+	confirmed: 'comfirmed_ruby_api',
+	removed: 'removed_attr'
+};
+
+function getValue(obj) {
+	return function(key) {
+		return obj[key];
+	}
+}
+
+function getKey(obj) {
+	return function(value) {
+		return Object.keys(obj).find((key) => obj[key] === value);
+	}
+}
+
+var getStatusValue = getValue(statuses);
+var getStatusKey = getKey(statuses);
+
+getStatusValue('rejected') // 'rejected_api'
+getStatusKey('comfirmed_ruby_api') // 'confirmed'
+					</code></pre>
+				</section>
+				<section data-background="http://www.reactiongifs.com/wp-content/uploads/2013/10/tim-and-eric-mind-blown.gif">
+				</section>
+				<section>
+					<h1>Compose</h1>
+					<pre><code class="hljs" data-trim contenteditable>
+function addTen(num) {
+	return num + 10;
+}
+function multiplyByFive(num) {
+	return num * 5;
+}
+function convertToArray(num) {
+	return someMagic(...);
+}
+
+var createBigArray = compose(convertToArray, multiplyByFive, addTen);
+
+var myArray = createBigArray(10); // [1, 2, ..., 100]
+
+					</code></pre>
+				</section>
+				<section>
+					<h1>Compose in real life</h1>
+					<pre><code class="hljs" data-trim contenteditable>
+function tagSuggestions(element) {
+  return element.queryAll(By.css('li.list-group-item.suggested-tag'));
+}
+
+function selectedTags(element) {
+  return element.queryAll(By.css('.tag.label.label-primary span.tag-name'));
+}
+
+function getItem(num) {
+  return (array) => array[num];
+}
+
+function activeClass(element) {
+  return element.classes['active'];
+}
+
+function suggestion(which) {
+  return compose(getItem(which), tagSuggestions);
+}
+
+function suggestionActive(which) {
+  return compose(activeClass, getItem(which), tagSuggestions);
+}
+
+function selectedTag(which) {
+  return compose(getItem(which), selectedTags);
+}
+it('should select second tag', () => {
+	expect(suggestionActive(0)(el)).toBe(false);
+	expect(suggestionActive(1)(el)).toBe(true);
+	expect(suggestionActive(2)(el)).toBe(false);
+});
+					</code></pre>
+				</section>
+				<section data-background="http://www.reactiongifs.com/wp-content/uploads/2013/10/tim-and-eric-mind-blown.gif">
+				</section>
+				<section>
+					<h1>Chain vs Compose</h1>
+					<pre><code class="hljs" data-trim contenteditable>
+import _ from "lodash";
+_.chain([1, 2, 3])
+  .map(x => [x, x*2])
+  .flatten()
+  .sort()
+  .value();
+
+import map from "lodash/fp/map";
+import flatten from "lodash/fp/flatten";
+import sortBy from "lodash/fp/sortBy";
+import flow from "lodash/fp/flow";
+flow(
+  map(x => [x, x*2]),
+  flatten,
+  sortBy(x => x)
+)([1,2,3]);
+					</code></pre>
+				</section>
+				<section>
+					<h1>JS Libraries</h1>
+					<ul>
+						<li> <a href="http://ramdajs.com/">Ramda</a> </li>
+						<li> <a href="https://lodash.com/">Lodash</a> </li>
+						<li> <a href="https://cwmyers.github.io/monet.js/">Monet.js</a> (monady)</li>
+						<li> <a href="https://facebook.github.io/immutable-js/">Immutable</a> </li>
+					</ul>
+				</section>
+				<section>
+					<h1>Useful Resources </h1>
+					<ul>
+						<li> <a href="https://www.gitbook.com/book/drboolean/mostly-adequate-guide/details">Professor Frisby’s Mostly Adequate Guide to Functional Programming</a> </li>
+						<li> <a href="http://learnyouahaskell.com/">Learn you a Haskell for Great Good</a></li>
+						<li> <a href="https://www.youtube.com/channel/UCO1cgjhGzsSYb1rsB4bFe4Q">funfunfunction</a></li>
+						<li> <a href="https://github.com/getify/functional-light-js/blob/master/README.md">Functional-Light JavaScript</a></li>
+						<li> <a href="https://github.com/MostlyAdequate/mostly-adequate-guide">Mostly adequate guide to FP (in javascript)</a></li>
+						<li> <a href="https://medium.com/making-internets/why-using-chain-is-a-mistake-9bc1f80d51ba#.er98vuexl">Why using `_.chain` is a mistake.</a> </li>
+						<li> <a href="https://jsperf.com/lodash-compose-vs-chain">lodash compose vs chain</a></li>
+					</ul>
+				</section>
+			</div>
+		</div>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				history: true,
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'plugin/markdown/marked.js' },
+					{ src: 'plugin/markdown/markdown.js' },
+					{ src: 'plugin/notes/notes.js', async: true },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } }
+				]
+			});
+		</script>
+	</body>
+</html>
